@@ -1,0 +1,19 @@
+{
+  "name": "devtinderbackend",
+  "version": "1.0.0",
+  "description": "DevTinder Backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arpitbeuria196/devTinderBackend.git"
+  },
+  "author": "Arpit Beuria",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arpitbeuria196/devTinderBackend/issues"
+  },
+  "homepage": "https://github.com/arpitbeuria196/devTinderBackend#readme"
+}
