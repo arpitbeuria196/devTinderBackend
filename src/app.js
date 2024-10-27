@@ -16,7 +16,7 @@ app.post("/signup",async (req,res)=>
    } 
    catch (error) 
    {
-        res.status(400).send("Something went wrong"); 
+        res.status(400).send(error.message); 
    }
 })
 //delete
@@ -30,7 +30,7 @@ app.delete("/user",async(req,res)=>
         res.send("user deleted successfully");
         
     } catch (error) {
-        res.status(400).send("Something went wrong"); 
+        res.status(400).send("error.message"); 
     }
 })
 //GetByEmail
@@ -62,21 +62,46 @@ app.get("/feed",async(req,res)=>
 })
 
 //update
-app.patch("/user",async (req,res)=>
-{
+app.patch("/user", async (req, res) => {
     const userId = req.body.userId;
     const data = req.body;
+
+    const ALLOWED_UPDATES = [
+        "photoUrl",
+        "about",
+        "gender",
+        "age",
+        "skills",
+    ];
+
+    let isUpdateAllowed = true;
+
+    for (let key in data) {
+        if (!ALLOWED_UPDATES.includes(key)) {
+            isUpdateAllowed = false;
+            break;
+        }
+    }
+
+    if (!isUpdateAllowed) {
+        return res.status(400).send("Update not allowed");
+    }
+
     try {
-        const user = await User.findByIdAndUpdate(userId, data, { new: true });
+        const user = await User.findByIdAndUpdate(userId, data, {
+            new: true,
+            runValidators: true,
+        });
+        
         if (!user) {
             return res.status(404).send("User not found");
         }
-        res.send("user updated successfully");
-        
+
+        res.send("User updated successfully");
     } catch (error) {
-        res.status(400).send("Something went wrong"); 
+        res.status(400).send(error.message); 
     }
-})
+});
 
 
 

@@ -19,6 +19,7 @@
   "homepage": "https://github.com/arpitbeuria196/devTinderBackend#readme",
   "dependencies": {
     "express": "^4.21.1",
-    "mongoose": "^8.7.3"
+    "mongoose": "^8.7.3",
+    "validator": "^13.12.0"
   }
 }
