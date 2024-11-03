@@ -54,7 +54,7 @@ app.post("/login",async (req,res)=>
         {
             throw new Error("EmailID is not present in DB");
         }
-        const isPasswordValid = bcrypt.compare(password,user.password);
+        const isPasswordValid = user.validatePasswords(password);
         if(isPasswordValid)
         {
             //Create a JWT Token
