@@ -1,108 +1,21 @@
 const express = require("express");
 const connectDB = require("./config/database")
 const app = express();
-const User = require("./models/user")
-const { validateData } = require("./utils/validation");
-const bcrypt = require("bcrypt");
-const user = require("./models/user");
 var cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
-const {userAuth} = require("./middlewares/auth")
+
 
 app.use(express.json());
 app.use(cookieParser());
-//signup
-app.post("/signup", async (req, res) => {
-    try {
-        // Validation of Data
-        validateData(req);
 
-        //password
-        const { firstName, lastName, emailId, password } = req.body;
 
-        const passwordHash =await bcrypt.hash(password,10);
 
-        console.log(passwordHash);
+const authRouter = require("./routes/auth"); 
+const profileRouter = require("./routes/profile");
+const  requestRouter = require("./routes/requests");
 
-        // Create and save the user
-        const user = new User(
-           {
-            firstName,
-            lastName,
-            emailId,
-            password: passwordHash
-           }
-        );
-        await user.save();
-        
-        res.send("User saved successfully");
-    } catch (error) {
-        console.error("Error during signup:", error.message);
-        res.status(400).send({ error: error.message });
-    }
-});
-
-//login
-app.post("/login",async (req,res)=>
-{
-    try 
-    {
-        const{emailId, password} = req.body;
-        
-        const user = await User.findOne({emailId:emailId});
-        if(!user)
-        {
-            throw new Error("EmailID is not present in DB");
-        }
-        const isPasswordValid = user.validatePasswords(password);
-        if(isPasswordValid)
-        {
-            //Create a JWT Token
-            const token = await user.getJWT();
-            
-            //Add token to cookies and send the response back to the user
-              res.cookie("token",token,
-                {
-                    expires:new Date(Date.now() + 8 *36000000)
-                }
-              );
-              res.send("Login Successfully");
-
-        }
-        else
-        {
-            throw new Error("Password is not valid");
-        }
-
-    }
-    catch (error) 
-    {
-        res.status(400).send("Error:"+err.message);
-        
-    }
-})
-//profile
-app.get("/profile",userAuth,async (req,res )=>
-{   
-    const user = await User.findById(_id);
-    if(!user)
-    {
-        throw new Error("User Doesn't Exist");   
-    }
- 
-    req.user= user;
-
-   // console.log(cookies);
-    res.send(user);
-})
-//sendConnectionRequest
-app.post("/sendConnectionRequest",userAuth, async(req,res)=>
-{
-    const user = req.user;
-    console.log("Sending a Connection Request");
-
-    res.send(user.firstName + "Connection Request Sent");
-})
+app.use("/",authRouter);
+app.use("/",profileRouter);
+app.use("/",requestRouter);
 
 
 
