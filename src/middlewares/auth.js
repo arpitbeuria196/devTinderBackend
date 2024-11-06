@@ -1,44 +1,39 @@
-
-const { model } = require("mongoose");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-const userAuth = async (req,res,next)=>
-{
-    //Read the token from the req cookies
-    try 
-    {
-        const {token} = req.cookies;
 
-        if(!token)
-        {
-            throw new Error("Tokem is not valid");
+const userAuth = async (req, res, next) => {
+    try {
+        // Read the token from cookies
+        const { token } = req.cookies;
+
+        if (!token) {
+            return res.status(401).send("Error: Token is not provided");
         }
-    
-        const decodeObj = jwt.verify(token,"DEV@Tinder$790 ");
-    
-        const{_id} =decodeObj;
-    
+
+        // Verify the token
+        const decodeObj = jwt.verify(token, "DEV@Tinder$790");
+
+        const { _id } = decodeObj;
+
+        // Find the user by ID
         const user = await User.findById(_id);
-    
-        if(!user)
-        {
-            throw new Error("User not found");
+
+        if (!user) {
+            return res.status(404).send("Error: User not found");
         }
+
+        // Attach user to request and proceed
         req.user = user;
         next();
         
-    } catch (error) 
-    {
-        res.status(400).send("ERROR:"+ error.message);
-        
+    } catch (error) {
+        if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+            return res.status(401).send("Error: Invalid or expired token");
+        }
+        res.status(500).send("Error: " + error.message);
     }
-   
+};
 
-    //validate the token
-    //Find the user
-}
-
-module.exports =
-{
+module.exports = {
     userAuth
-}
+};

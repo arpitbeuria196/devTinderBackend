@@ -5,8 +5,8 @@ const validateEditProfileData = require("../utils/validation");
 
 // Profile route
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
-    const user = req.user; // Access the user from userAuth middleware
-    res.send(user);
+    const loggedInUser = req.user; // Access the user from userAuth middleware
+    res.send(loggedInUser);
 });
 
 
